@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Introduction to ggplot2</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Ursula Laa" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/kunoichi.css" rel="stylesheet" />
+    <link href="libs/remark-css/ninjutsu.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+
+layout: false
+class: split-25
+
+&lt;style type="text/css"&gt;
+.remark-slide-content{
+font-size: 30px;
+}
+code.r{
+  font-size: 24px;
+}
+
+&lt;/style&gt;
+
+
+
+
+&lt;style type="text/css"&gt;
+/* custom.css */
+:root{
+  --main-color1: #509e2f;
+  --main-color2: #bcbddc;
+  --main-color3: #efedf5;
+  --main-color4: #9DDAE5;
+  --text-color3: black;
+  --text-color4: black;
+  --code-inline-color: #4e5054;
+  --link-color: #006CAB;
+}
+.large { font-size: 150% }
+.largeish { font-size: 120% }
+.summarystyle { font-size: 150%;
+  line-height:150%;}
+&lt;/style&gt;
+
+.column[.bottom_abs.content[
+&lt;img src="plots/Boku-wien.png" width="70%"&gt;
+]]
+
+.column.bg-main1[.content.vmiddle[.center[
+
+
+# Introduction to ggplot2
+### Workshop
+
+&lt;br&gt;
+&lt;br&gt;
+
+# Ursula Laa
+
+
+### Institute of Statistics
+### University of Natrual Resources and Life Sciences
+### (BOKU)
+
+]]]
+
+---
+layout: false
+class: split-66
+
+.column[.content[
+
+
+# A bit about me
+
+&lt;br&gt;
+
+&lt;img src="figure/map1-1.png" style="display: block; margin: auto;" /&gt;
+]]
+
+.column[.content.vmiddle[.center[
+&lt;img src="plots/IMG_5105.jpg" width="55%"&gt;
+
+&lt;br&gt;
+
+&lt;img src="plots/T1tttt_ICHEP2014_All.pdf" width="75%"&gt;
+]]]
+
+---
+layout: false
+class: split-66
+
+.column[.content[
+
+
+# A bit about me
+
+&lt;br&gt;
+
+&lt;img src="figure/map2-1.png" style="display: block; margin: auto;" /&gt;
+]]
+
+.column[.content.vmiddle[.center[
+&lt;img src="plots/l_snu.png" width="75%"&gt;
+
+&lt;br&gt;
+
+&lt;img src="plots/Rmax_allowed_glu_N1_BinoLSP.png" width="95%"&gt;
+]]]
+
+---
+layout: false
+class: split-66
+
+.column[.content[
+
+
+# A bit about me
+
+&lt;br&gt;
+
+&lt;img src="figure/map3-1.png" style="display: block; margin: auto;" /&gt;
+]]
+
+.column[.content.vmiddle[.center[
+&lt;img src="plots/tourr.png" width="40%"&gt;
+&lt;img src="plots/plotly.png" width="40%"&gt;
+
+&lt;br&gt;
+
+
+&lt;img src="plots/flyingBirds.gif" width="60%" height="60%" style="display: block; margin: auto;" /&gt;
+]]]
+---
+layout: false
+class: split-66
+
+.column[.content[
+
+
+# A bit about me
+
+&lt;br&gt;
+
+&lt;img src="figure/map4-1.png" style="display: block; margin: auto;" /&gt;
+]]
+
+.column[.content.vmiddle[.center[
+&lt;img src="plots/Boku-wien.png" width="55%"&gt;
+&lt;img src="plots/R-LadiesGlobal.png" width="55%"&gt;
+]]]
+---
+
+# Workshop today
+
+Today we will learn about building different graphs with `ggplot2`. We will use the `palmerpenguins` data for examples, and maybe also other packages from the `tidyverse` to get our data into tidy format.
+
+Before getting started make sure you have these packages installed, and load them into your R session if you want to follow along during the workshop.
+
+
+```r
+install.packages("tidyverse")
+install.packages("palmerpenguins")
+```
+
+
+```r
+library(palmerpenguins)
+library(tidyverse)
+```
+
+---
+
+# Data example
+
+The data we work with collects information about three species of penguins from Antartica, check documentation at https://allisonhorst.github.io/palmerpenguins/articles/intro.html. It's like a fun alternative to the Iris data.
+
+
+```r
+glimpse(penguins)
+```
+
+```
+#&gt; Rows: 344
+#&gt; Columns: 8
+#&gt; $ species           &lt;fct&gt; Adelie, Adelie, Adelie, Adelie, Adelie, Adelie, Adelie, Adelie, Adelie, Adelie, Adelie, Ade…
+#&gt; $ island            &lt;fct&gt; Torgersen, Torgersen, Torgersen, Torgersen, Torgersen, Torgersen, Torgersen, Torgersen, Tor…
+#&gt; $ bill_length_mm    &lt;dbl&gt; 39.1, 39.5, 40.3, NA, 36.7, 39.3, 38.9, 39.2, 34.1, 42.0, 37.8, 37.8, 41.1, 38.6, 34.6, 36.…
+#&gt; $ bill_depth_mm     &lt;dbl&gt; 18.7, 17.4, 18.0, NA, 19.3, 20.6, 17.8, 19.6, 18.1, 20.2, 17.1, 17.3, 17.6, 21.2, 21.1, 17.…
+#&gt; $ flipper_length_mm &lt;int&gt; 181, 186, 195, NA, 193, 190, 181, 195, 193, 190, 186, 180, 182, 191, 198, 185, 195, 197, 18…
+#&gt; $ body_mass_g       &lt;int&gt; 3750, 3800, 3250, NA, 3450, 3650, 3625, 4675, 3475, 4250, 3300, 3700, 3200, 3800, 4400, 370…
+#&gt; $ sex               &lt;fct&gt; male, female, female, NA, female, male, female, male, NA, NA, NA, NA, female, male, male, f…
+#&gt; $ year              &lt;int&gt; 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2…
+```
+
+
+---
+# Data visualisation the base R way
+
+We can make a histogram of any vector, this is actually easy:
+
+
+```r
+hist(penguins$body_mass_g)
+```
+
+&lt;img src="figure/unnamed-chunk-6-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+# Data visualisation the base R way
+
+Making a bar chart (without going through the `plot()` function) is already a bit more work, and the interface is different. Let's try to show counts by species and island:
+
+
+```r
+species_count &lt;- table(penguins$species, penguins$island)
+species_count
+```
+
+```
+#&gt;            
+#&gt;             Biscoe Dream Torgersen
+#&gt;   Adelie        44    56        52
+#&gt;   Chinstrap      0    68         0
+#&gt;   Gentoo       124     0         0
+```
+
+---
+# Data visualisation the base R way
+
+
+```r
+barplot(species_count, legend = rownames(species_count))
+```
+
+&lt;img src="figure/unnamed-chunk-8-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+# Data visualisation the base R way
+
+.largeish[
+What makes this approach cumbersome? 
+
+- We need to know the specific plotting functions and how its interface works
+- We often need to prepare the data first, to match these interfaces
+- It's difficult to make small changes, we often need to come back to the data preparation step
+
+Alternative approach:
+
+- Work with a standard data structure that is the input to a standard plotting interface
+- Define a grammar of how to map elements from the data structure onto the drawing canvas
+]
+
+--
+
+.center.large[tidy data + grammar of graphics]
+
+---
+# Tidy data
+
+&lt;br&gt;
+
+.largeish[
+There are three principles of tidy data:
+1. Each **variable** must have its own **column**. That means we make one column in our data frame for each measurement we make. In the penguin data these are the species and island, the various length measurements, the body mass, and the year.
+2. Each **observation** must have its own **row**. That means each time we are measuring our variables, we are adding a row to our data. In our example, we have one row for each individual penguin that has been observed.
+3. Each **value** must have its own **cell**. If we make sure to implement the first two rules properly, this will automatically be true!
+]
+
+---
+# Tidy data
+
+Illustration from the R for data science textbook:
+
+.column[.content[.center[
+&lt;img src="plots/tidy-1.png" width="95%"&gt;
+]]]
+
+---
+# Grammar of graphics
+
+&lt;br&gt;
+
+
+.largeish[
+The grammar of graphics defines a framework to construct statistical graphics in a principled way, by defining an explicit relationship between the variables in the data you have and the graphic or plot you wish to represent.
+
+It was first defined by **Lee Wilkinson** and extended by **Hadley Wickham** in the R package `ggplot2` (part of the `tidyverse`).]
+
+.large[
+It is based on using **tidy data**, defining **mappings** between input variables onto _aestetics_, and using **geoms** to select the _graphical primitives_.
+]
+---
+# Our first ggplot
+
+.large[
+When using the grammar of graphics we are defining our plot in steps. This means it takes a bit longer to get started compared to the simple hist function in base R, but in the long run we get a lot of extra flexibility and it is much easier to get the graph you want in most cases.
+
+Generally you can think about your graph as getting built in **layers**, they are combined via the `+` symbol in your code. Let's see how this works by recreating the first histogram we made.
+]
+---
+
+layout: false
+class: split-33
+
+.column[.content[
+## Our first ggplot
+
+
+We start by passing our **data set** to the ggplot function
+
+
+```r
+*ggplot(penguins)
+```
+
+]]
+
+.column[.content.vmiddle[
+&lt;img src="figure/output1-1.png" style="display: block; margin: auto;" /&gt;
+]]
+
+---
+
+layout: false
+class: split-33
+
+.column[.content[
+## Our first ggplot
+
+
+We next define the **aesthetic mapping** (or **variable mapping**)
+
+
+
+```r
+ggplot(penguins) +
+* aes(x = body_mass_g)
+```
+
+]]
+
+.column[.content.vmiddle[
+&lt;img src="figure/output2-1.png" style="display: block; margin: auto;" /&gt;
+]]
+
+---
+
+layout: false
+class: split-33
+
+.column[.content[
+## Our first ggplot
+
+
+Finally we specify the **geom** we want to draw 
+
+
+
+```r
+ggplot(penguins) +
+  aes(x=body_mass_g) +
+* geom_histogram()
+```
+
+]]
+
+.column[.content.vmiddle[
+&lt;img src="figure/output3-1.png" style="display: block; margin: auto;" /&gt;
+]]
+
+---
+
+layout: false
+class: split-33
+
+.column[.content[
+## Our first ggplot
+
+
+We can adjust the graph, e.g. to get wider bins that are closer to what the `histogram()` function did.
+
+
+
+```r
+ggplot(penguins) +
+  aes(x=body_mass_g) +
+  geom_histogram(
+*   binwidth = 500
+    )
+```
+
+]]
+
+.column[.content.vmiddle[
+&lt;img src="figure/output4-1.png" style="display: block; margin: auto;" /&gt;
+]]
+
+---
+# Our first ggplot
+
+Once you understand these components you can make your code shorter, for example we get the same graph from
+
+
+```r
+ggplot(penguins, mapping = aes(x=body_mass_g)) +
+  geom_histogram(binwidth = 500)
+```
+
+&lt;img src="figure/unnamed-chunk-9-1.png" style="display: block; margin: auto;" /&gt;
+
+
+---
+# Our first ggplot
+
+.large[
+Breaking down the components:
+]
+
+.largeish[
+
+- to initializing the graph we pass our **data** into the `ggplot()` function
+- we use the `aes()` function to define the aestetics **mapping**, how do the columns of your data correspond to the different aesthetics on the plot (we will see more of these soon)
+- we use the specific `geom_` functions to define the **graphical primitive** we want (here we only drew a histogram, but we could combine several geoms in one plot too!)
+
+]
+
+---
+# Mappings
+
+.large[
+
+For our histogram we only had to specify a single aesthetic mapping, the body mass column was mapped onto the x-axis. There are many more aesthetics to map to:
+
+- x and y axis
+- color (and fill color)
+- style (line style, shapes in scatter plots)
+- size
+- alpha (transparency used when plotting)
+
+]
+
+---
+# A second mapping
+
+For example, we can map the species to fill color
+
+```r
+ggplot(penguins, mapping = aes(x=body_mass_g, fill=species)) +
+  geom_histogram(binwidth = 500)
+```
+
+&lt;img src="figure/unnamed-chunk-10-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+# Changing the positioning
+
+By default this is stacking the histograms of the different species. It might be easier to read if they are side-by-side instead using the position argument to better compare the distributions.
+
+
+```r
+ggplot(penguins, mapping = aes(x=body_mass_g, fill=species)) +
+  geom_histogram(binwidth = 500, position = "dodge")
+```
+
+&lt;img src="figure/unnamed-chunk-11-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+# Faceting
+
+Or we can use faceting to split up the histograms instead.
+
+
+```r
+ggplot(penguins, mapping = aes(x=body_mass_g, fill=species)) +
+  geom_histogram(binwidth = 500) +
+  facet_wrap(~species)
+```
+
+&lt;img src="figure/unnamed-chunk-12-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+# Geoms
+
+.largeish[
+So far we have only used `geom_histogram()` and played with its arguments, different mappings and faceting to generate different versions of the same type of graph (a histogram).
+
+Just as easily, and using the **same interface** we can use different **geoms** to generate different types of graphs from the same input data. _Without_ preparing the data in a specific way first, and _without_ need of learning how to use a plotting function based on the type of plot we want.
+
+Let's start by re-making the bar chart from earlier with `ggplot2`!
+
+]
+
+---
+# Bar chart
+
+
+
+```r
+ggplot(penguins, mapping = aes(x=island, fill=species)) +
+  geom_bar()
+```
+
+&lt;img src="figure/unnamed-chunk-13-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+# Box plots
+
+
+```r
+ggplot(penguins, mapping = aes(x=species, y=body_mass_g)) +
+  geom_boxplot()
+```
+
+&lt;img src="figure/unnamed-chunk-14-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+# Box plots
+
+Again, it is easy to change aspects of this plot to learn something new, for example
+
+
+```r
+ggplot(penguins, mapping = aes(x=species, y=body_mass_g, color=sex)) +
+  geom_boxplot()
+```
+
+&lt;img src="figure/unnamed-chunk-15-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+# Scatter plots
+
+For example we would expect that the flipper length and the body mass are related
+
+
+```r
+ggplot(penguins, mapping = aes(x=flipper_length_mm, y=body_mass_g)) +
+  geom_point()
+```
+
+&lt;img src="figure/unnamed-chunk-16-1.png" style="display: block; margin: auto;" /&gt;
+
+
+---
+# Scatter plots
+
+How does this depend on the species and sex of the penguins?
+
+
+```r
+ggplot(penguins, mapping = aes(x=flipper_length_mm, y=body_mass_g,
+                               color=species, shape=sex)) +
+  geom_point()
+```
+
+&lt;img src="figure/unnamed-chunk-17-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+# Building layers
+
+
+```r
+ggplot(penguins,
+       aes(x=body_mass_g)) +
+  geom_histogram(fill = "grey") +
+  geom_histogram(aes(color = species),
+                 position = "identity",
+                 fill = NA)
+```
+
+&lt;img src="figure/unnamed-chunk-18-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+# Building layers
+
+
+```r
+ggplot(penguins,
+       aes(x=body_mass_g, y = stat(density))) +
+  geom_histogram(fill = "grey") +
+  geom_density()
+```
+
+&lt;img src="figure/unnamed-chunk-19-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+# Customizing your graph
+
+.largeish[
+Similar to how we add new layers to our graph, we can also add styling specifications, for example
+
+- setting a title with `ggtitle()`
+- setting axis labels with `xlab()` and `ylab()`
+- modifying the theme with `theme()` or using  pre-defined themes like `theme_bw()`
+- changing color scales with the `scale_color_` and `scale_fill_` functions
+- change to using polar coordinates with `coord_polar()`
+]
+
+---
+# Styling our histogram
+
+
+We can adjust the graph, e.g. to get wider bins that are closer to what the `histogram()` function did.
+
+
+
+```r
+ggplot(penguins) +
+  aes(x = body_mass_g, fill = species) +
+  geom_histogram(binwidth = 500) +
+  facet_wrap(~species) +
+  theme_bw() +
+  ggtitle("My histogram") +
+  xlab("Body mass in g") +
+  ylab("Counts") +
+  scale_fill_brewer(palette = "Dark2") +
+  theme(legend.position = "none")
+```
+---
+# Styling our histogram
+
+
+We can adjust the graph, e.g. to get wider bins that are closer to what the `histogram()` function did.
+
+
+&lt;img src="figure/unnamed-chunk-21-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+# A step further
+
+.largeish[
+Once you have build your graphic with `ggplot2` turning it into an **animation** or an **interactive** graph can be just one extra line of code! 
+
+- Use `gganimate` to add `transition_` functions to generate an animation from your ggplot
+- Use the `ggplotly()` function from the `plotly` package to generate an interactive graph, e.g. with tooltip text
+
+]
+
+---
+# Animation
+
+
+
+```r
+# install.packages("gganimate")
+library(gganimate)
+ggplot(penguins, mapping = aes(x=flipper_length_mm, y=body_mass_g, color=species)) +
+  geom_point() +
+  transition_states(species)
+```
+
+&lt;img src="figure/unnamed-chunk-22-1.gif" style="display: block; margin: auto;" /&gt;
+
+---
+# Interaction
+
+
+```r
+# install.packages("plotly")
+library(plotly)
+p &lt;- ggplot(penguins,
+            mapping = aes(x=flipper_length_mm,
+                          y=body_mass_g,
+                          color=species)
+            ) +
+  geom_point()
+pltly &lt;- ggplotly(p, width=600, height=400)
+```
+
+
+
+---
+# Interaction
+
+&lt;iframe src="plotly.html" width="900" height="550" scrolling="no" seamless="seamless" frameBorder="0"&gt; &lt;/iframe&gt;
+
+---
+class: bg-main1 center middle
+# Thanks!
+.large[
+These slides were made with R Markdown using xaringan and the Kunoichi theme.
+
+There are a lot of great resources for better use of ggplot2 out there, some suggestions:
+
+- Blog post from Cedric Scherer on the evolution of a ggplot: https://www.cedricscherer.com/2019/05/17/the-evolution-of-a-ggplot-ep.-1/#polish
+- R Studio Conf talk by William Chase on the glamour of graphics: https://www.rstudio.com/resources/rstudioconf-2020/the-glamour-of-graphics/
+
+]
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="libs/jquery/jquery.min.js"></script>
+<script src="libs/slides.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"ratio": "16:9",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
